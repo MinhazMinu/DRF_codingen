@@ -12,3 +12,6 @@ class Product(models.Model):
     @property
     def sale_price(self):
         return f"{Decimal(self.price):.2f}"
+
+    def get_discount(self):
+        return f"{Decimal(self.price) * Decimal(.8):.2f}"

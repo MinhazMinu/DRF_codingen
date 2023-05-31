@@ -1,4 +1,3 @@
-from decimal import Decimal
 from .models import Product
 from rest_framework import serializers
 
@@ -11,4 +10,8 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ["title", "content", "price", "sale_price", "my_discount"]
 
     def get_my_discount(self, obj):
-        return f"{obj.price * Decimal(.8):.2f}"
+        if not hasattr(obj, "id"):
+            return None
+        if not isinstance(obj, Product):
+            return None
+        return obj.get_discount()
