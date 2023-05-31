@@ -4,8 +4,22 @@ from .models import Product
 from .serializers import ProductSerializer
 
 
+class ProductCreateAPIView(generics.CreateAPIView):
+    """DRF Create API View"""
+
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    def perform_create(self, serializer):
+        title = serializer.validated_data.get("title")
+        content = serializer.validated_data.get("content") or None
+        if content is None:
+            content = title
+        serializer.save(content=content)
+
+
 class ProductDetailsAPIView(generics.RetrieveAPIView):
-    """DRF API View"""
+    """DRF Details API View"""
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
