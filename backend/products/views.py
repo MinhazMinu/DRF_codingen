@@ -1,7 +1,4 @@
-# from django.shortcuts import get_object_or_404
-# from rest_framework.response import Response
-# from rest_framework.decorators import api_view
-from rest_framework import generics, mixins
+from rest_framework import generics, authentication, permissions
 
 from .models import Product
 from .serializers import ProductSerializer
@@ -12,6 +9,8 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         title = serializer.validated_data.get("title")
@@ -43,12 +42,6 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
             instance.content = instance.title
             # instance.save()
 
-        # title = serializer.validated_data.get("title")
-        # content = serializer.validated_data.get("content") or None
-        # if content is None:
-        #     content = title
-        # serializer.save(content=content)
-
 
 class ProductDeleteAPIView(generics.DestroyAPIView):
     """DRF Details API View"""
@@ -61,33 +54,33 @@ class ProductDeleteAPIView(generics.DestroyAPIView):
         return super().perform_destroy(instance)
 
 
-class ProductMixinView(
-    mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.ListModelMixin,
-    generics.GenericAPIView,
-):
-    """DRF Product Mixin API View"""
+# class ProductMixinView(
+#     mixins.CreateModelMixin,
+#     mixins.RetrieveModelMixin,
+#     mixins.ListModelMixin,
+#     generics.GenericAPIView,
+# ):
+#     """DRF Product Mixin API View"""
 
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    lookup_field = "pk"
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+#     lookup_field = "pk"
 
-    def get(self, request, *args, **kwargs):
-        pk = kwargs.get("pk")
-        if pk is not None:
-            return self.retrieve(request, *args, **kwargs)
-        return self.list(request, *args, **kwargs)
+#     def get(self, request, *args, **kwargs):
+#         pk = kwargs.get("pk")
+#         if pk is not None:
+#             return self.retrieve(request, *args, **kwargs)
+#         return self.list(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+#     def post(self, request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
 
-    def perform_create(self, serializer):
-        serializer.validated_data.get("title")
-        content = serializer.validated_data.get("content") or None
-        if content is None:
-            content = "This is from list product Mixins"
-        serializer.save(content=content)
+#     def perform_create(self, serializer):
+#         serializer.validated_data.get("title")
+#         content = serializer.validated_data.get("content") or None
+#         if content is None:
+#             content = "This is from list product Mixins"
+#         serializer.save(content=content)
 
 
 # @api_view(["GET", "POST"])
