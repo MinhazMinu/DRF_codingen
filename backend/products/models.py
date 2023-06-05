@@ -15,3 +15,6 @@ class Product(models.Model):
 
     def get_discount(self):
         return f"{Decimal(self.price) * Decimal(.8):.2f}"
+
+    def __str__(self) -> str:
+        return self.title

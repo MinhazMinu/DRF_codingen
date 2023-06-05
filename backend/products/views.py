@@ -1,7 +1,10 @@
 from rest_framework import generics, authentication, permissions
 
+from .permissions import IsStaffEditorPermissions
+
 from .models import Product
 from .serializers import ProductSerializer
+from api.authentication import TokenAuthentication
 
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
@@ -9,8 +12,14 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [
+        authentication.SessionAuthentication,
+        TokenAuthentication,
+    ]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsStaffEditorPermissions,
+    ]
 
     def perform_create(self, serializer):
         title = serializer.validated_data.get("title")
@@ -106,4 +115,4 @@ class ProductDeleteAPIView(generics.DestroyAPIView):
 #                 content = title
 #             serializer.save(content=content)
 #             return Response(serializer.data, status=201)
-#         return Response(serializer.errors)
+#         returnResponse(serializer.errors)
