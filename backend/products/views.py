@@ -1,10 +1,9 @@
-from rest_framework import generics, authentication, permissions
+from rest_framework import generics, permissions
 
 from .permissions import IsStaffEditorPermissions
 
 from .models import Product
 from .serializers import ProductSerializer
-from api.authentication import TokenAuthentication
 
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
@@ -12,12 +11,9 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [
-        authentication.SessionAuthentication,
-        TokenAuthentication,
-    ]
+
     permission_classes = [
-        permissions.IsAuthenticated,
+        permissions.IsAdminUser,
         IsStaffEditorPermissions,
     ]
 
@@ -34,6 +30,10 @@ class ProductDetailsAPIView(generics.RetrieveAPIView):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [
+        permissions.IsAdminUser,
+        IsStaffEditorPermissions,
+    ]
     # lookup_field = "pk"
     # lookup_url_kwarg = "product_id"
 
@@ -44,6 +44,10 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "pk"
+    permission_classes = [
+        permissions.IsAdminUser,
+        IsStaffEditorPermissions,
+    ]
 
     def perform_update(self, serializer):
         instance = serializer.save()
@@ -58,6 +62,10 @@ class ProductDeleteAPIView(generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "pk"
+    permission_classes = [
+        permissions.IsAdminUser,
+        IsStaffEditorPermissions,
+    ]
 
     def perform_destroy(self, instance):
         return super().perform_destroy(instance)
