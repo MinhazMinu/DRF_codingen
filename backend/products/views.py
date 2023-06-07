@@ -1,21 +1,17 @@
-from rest_framework import generics, permissions
+from rest_framework import generics
 
-from .permissions import IsStaffEditorPermissions
-
+from api.mixins import StaffEditorPermissionsMixin
 from .models import Product
 from .serializers import ProductSerializer
 
 
-class ProductListCreateAPIView(generics.ListCreateAPIView):
+class ProductListCreateAPIView(
+    StaffEditorPermissionsMixin, generics.ListCreateAPIView
+):
     """DRF Create API View"""
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-
-    permission_classes = [
-        permissions.IsAdminUser,
-        IsStaffEditorPermissions,
-    ]
 
     def perform_create(self, serializer):
         title = serializer.validated_data.get("title")
@@ -25,29 +21,23 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
         serializer.save(content=content)
 
 
-class ProductDetailsAPIView(generics.RetrieveAPIView):
+class ProductDetailsAPIView(
+    StaffEditorPermissionsMixin, generics.RetrieveAPIView
+):
     """DRF Details API View"""
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [
-        permissions.IsAdminUser,
-        IsStaffEditorPermissions,
-    ]
     # lookup_field = "pk"
     # lookup_url_kwarg = "product_id"
 
 
-class ProductUpdateAPIView(generics.UpdateAPIView):
+class ProductUpdateAPIView(StaffEditorPermissionsMixin, generics.UpdateAPIView):
     """DRF Details API View"""
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "pk"
-    permission_classes = [
-        permissions.IsAdminUser,
-        IsStaffEditorPermissions,
-    ]
 
     def perform_update(self, serializer):
         instance = serializer.save()
@@ -56,16 +46,15 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
             # instance.save()
 
 
-class ProductDeleteAPIView(generics.DestroyAPIView):
+class ProductDeleteAPIView(
+    StaffEditorPermissionsMixin,
+    generics.DestroyAPIView,
+):
     """DRF Details API View"""
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "pk"
-    permission_classes = [
-        permissions.IsAdminUser,
-        IsStaffEditorPermissions,
-    ]
 
     def perform_destroy(self, instance):
         return super().perform_destroy(instance)
